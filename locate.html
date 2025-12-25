@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GPS Location Fetch and Save</title>
+</head>
+<body onload="getLocation()">
+
+<div id="coords"></div>
+<div id="status"></div>
+
+<script>
+function sendLocation(lat, lon) {
+    const url = `location.php?lat=${encodeURIComponent(lat)}&long=${encodeURIComponent(lon)}`;
+
+    fetch(url)
+        .then(r => r.text())
+        .then(txt => document.getElementById("status").textContent = txt)
+        .catch(() => document.getElementById("status").textContent = "Error sending location.");
+}
+
+function getLocation() {
+    if (!navigator.geolocation) {
+        document.getElementById("status").textContent = "Browser does not support GPS.";
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(pos => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+
+        document.getElementById("coords").textContent =
+            `Latitude: ${lat}, Longitude: ${lon}`;
+
+        sendLocation(lat, lon);
+
+    }, err => {
+        document.getElementById("status").textContent =
+            "Unable to retrieve location: " + err.message;
+    });
+}
+</script>
+
+</body>
+</html>
